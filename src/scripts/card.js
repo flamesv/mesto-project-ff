@@ -1,3 +1,21 @@
+import { openModal } from "./modal";
+import { imagePopupImg, imagePopupCaption, imagePopup } from "./index";
+
+function deleteCard(card) {
+  card.remove();
+}
+
+function likeCard(likeButton) {
+  likeButton.classList.toggle("card__like-button_is-active");
+}
+
+function zoomImage(src, title) {
+  imagePopupImg.src = src;
+  imagePopupImg.alt = title;
+  imagePopupCaption.textContent = title;
+  openModal(imagePopup);
+}
+
 function createCard(
   card,
   deleteCallback = deleteCard,
@@ -8,26 +26,24 @@ function createCard(
   const cardElement = cardTemplate
     .querySelector(".places__item.card")
     .cloneNode(true);
-  cardElement.querySelector(".card__image").src = card.link;
-  cardElement.querySelector(".card__image").alt = card.name;
+
+  const cardImage = cardElement.querySelector(".card__image");
+  cardImage.src = card.link;
+  cardImage.alt = card.name;
+
+  cardImage.addEventListener("click", (e) => zoomImage(card.link, card.name));
+
   cardElement.querySelector(".card__title").textContent = card.name;
 
   const deleteButton = cardElement.querySelector(".card__delete-button");
   deleteButton.addEventListener("click", () => deleteCallback(cardElement));
+
   const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", () => likeCallback(likeButton));
-  const cardImage = cardElement.querySelector(".card__image");
-  cardImage.addEventListener("click", () => zoomImage(cardElement));
+
   return cardElement;
 }
 
 // @todo: Функция удаления карточки
-function deleteCard(card) {
-  card.remove();
-}
 
-function likeCard(likeButton) {
-  likeButton.classList.toggle("card__like-button_is-active");
-}
-
-export { createCard, deleteCard, likeCard };
+export { createCard, deleteCard, likeCard, zoomImage };

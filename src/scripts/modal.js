@@ -1,33 +1,32 @@
-function closePopupHandler(popup, doClose = false) {
-  const handleOverlayClick = (e) => {
-    if (
-      doClose ||
-      e.target.classList.contains("popup") ||
-      e.target.classList.contains("popup__close")
-    ) {
-      return closePopup(popup);
-    }
-  };
+let currentModal;
 
-  const handleEscapePress = (e) => {
-    if (e.key === "Escape") {
-      return closePopup(popup);
-    }
-  };
+function openModal(modal) {
+  currentModal = modal;
+  modal.classList.add("popup_is-opened");
+  document.addEventListener("keydown", handleEscape);
+  modal.addEventListener("click", handleClick);
+}
 
-  function closePopup(popup) {
-    popup.querySelector("form")?.reset();
-    popup.classList.remove("popup_is-opened");
-    popup.removeEventListener("click", handleOverlayClick);
-    document.removeEventListener("keydown", handleEscapePress);
+function closeModal(modal) {
+  currentModal = null;
+  modal.classList.remove("popup_is-opened");
+  document.removeEventListener("keydown", handleEscape);
+  modal.removeEventListener("click", handleClick);
+}
+
+function handleEscape(e) {
+  if (e.key === "Escape") {
+    return closeModal(currentModal);
   }
-  popup.addEventListener("click", handleOverlayClick);
-  document.addEventListener("keydown", handleEscapePress);
 }
 
-function openPopupHandler(popup) {
-  popup.classList.add("popup_is-opened");
-  closePopupHandler(popup);
+function handleClick(e) {
+  if (
+    e.target.classList.contains("popup__close") ||
+    e.target.classList.contains("popup")
+  ) {
+    return closeModal(currentModal);
+  }
 }
 
-export { closePopupHandler as closeModal, openPopupHandler as openModal };
+export { openModal, closeModal };
