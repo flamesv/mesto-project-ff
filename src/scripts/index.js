@@ -1,6 +1,6 @@
 import "../pages/index.css";
 import { initialCards } from "./cards.js";
-import { createCard, deleteCard, likeCard, zoomImage } from "./card.js";
+import { createCard, deleteCard, likeCard } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
 
 const cardsContainer = document.querySelector(".places__list");
@@ -32,6 +32,13 @@ editProfileButton.addEventListener("click", (e) => {
 addProfileButton.addEventListener("click", (e) => {
   openModal(addCardPopup);
 });
+
+function zoomImage(src, title) {
+  imagePopupImg.src = src;
+  imagePopupImg.alt = title;
+  imagePopupCaption.textContent = title;
+  openModal(imagePopup);
+}
 
 function handleEditProfileFormSubmit(evt) {
   evt.preventDefault();

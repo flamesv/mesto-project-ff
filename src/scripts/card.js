@@ -1,6 +1,3 @@
-import { openModal } from "./modal";
-import { imagePopupImg, imagePopupCaption, imagePopup } from "./index";
-
 function deleteCard(card) {
   card.remove();
 }
@@ -9,18 +6,11 @@ function likeCard(likeButton) {
   likeButton.classList.toggle("card__like-button_is-active");
 }
 
-function zoomImage(src, title) {
-  imagePopupImg.src = src;
-  imagePopupImg.alt = title;
-  imagePopupCaption.textContent = title;
-  openModal(imagePopup);
-}
-
 function createCard(
   card,
   deleteCallback = deleteCard,
   likeCallback = likeCard,
-  zoomImage = zoomImage
+  zoomImage = false
 ) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate
@@ -31,7 +21,9 @@ function createCard(
   cardImage.src = card.link;
   cardImage.alt = card.name;
 
-  cardImage.addEventListener("click", (e) => zoomImage(card.link, card.name));
+  if (zoomImage) {
+    cardImage.addEventListener("click", (e) => zoomImage(card.link, card.name));
+  }
 
   cardElement.querySelector(".card__title").textContent = card.name;
 
@@ -46,4 +38,4 @@ function createCard(
 
 // @todo: Функция удаления карточки
 
-export { createCard, deleteCard, likeCard, zoomImage };
+export { createCard, deleteCard, likeCard };
