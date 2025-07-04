@@ -30,6 +30,9 @@ const imagePopupImg = document.querySelector(".popup__image");
 const imagePopupCaption = document.querySelector(".popup__caption");
 const imagePopup = document.querySelector(".popup_type_image");
 
+const profileName = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+
 let userInfo = {};
 
 const validationConfig = {
@@ -65,24 +68,20 @@ function handleUpdateAvatarSubmit(evt) {
   updateAvatar(avatarLink)
     .then((res) => {
       updateAvatarInHtml(editAvatarButton, avatarLink);
+      closeModal(editAvatarPopup);
+      avatarForm.reset();
     })
     .catch((err) => console.log("handleUpdateAvatarSubmit: ", err))
     .finally(() => {
       preloader(saveAvatarButton, false);
-      closeModal(editAvatarPopup);
-      avatarForm.reset();
     });
 }
 avatarForm.addEventListener("submit", handleUpdateAvatarSubmit);
 
 // редактирование профиля
 editProfileButton.addEventListener("click", (e) => {
-  getMe()
-    .then((userInfo) => {
-      nameInput.value = userInfo.name;
-      jobInput.value = userInfo.about;
-    })
-    .catch(console.error);
+  nameInput.value = profileName.textContent;
+  jobInput.value = profileDescription.textContent;
 
   clearValidation(editPopup, validationConfig);
 
@@ -103,9 +102,6 @@ function zoomImage(src, title) {
 }
 
 function updateProfileInHtml(name, desc) {
-  const profileName = document.querySelector(".profile__title");
-  const profileDescription = document.querySelector(".profile__description");
-
   profileName.textContent = name;
   profileDescription.textContent = desc;
 }
@@ -116,10 +112,9 @@ function handleEditProfileFormSubmit(evt) {
   updateProfile(nameInput.value, jobInput.value)
     .then(() => {
       updateProfileInHtml(nameInput.value, jobInput.value);
+      closeModal(editPopup);
     })
     .catch(console.error);
-
-  closeModal(editPopup);
 }
 
 function preloader(button, inProgress) {
@@ -150,12 +145,12 @@ function handleAddCardFormSubmit(evt) {
           userInfo._id
         )
       );
+      closeModal(addCardPopup);
+      addCardForm.reset();
     })
     .catch((err) => console.log("handleAddCardFormSubmit: ", err))
     .finally(() => {
       preloader(addCardPopupButton, false);
-      closeModal(addCardPopup);
-      addCardForm.reset();
     });
 }
 

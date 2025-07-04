@@ -1,11 +1,7 @@
 const showInputError = (inputElement, errorMessage, config) => {
   const errorElement = inputElement.nextElementSibling;
-  // console.log(inputElement.validity);
-  if (inputElement.validity.patternMismatch) {
-    errorElement.textContent = inputElement.dataset.errorMessage;
-  } else {
-    errorElement.textContent = errorMessage;
-  }
+
+  errorElement.textContent = errorMessage;
 
   inputElement.classList.add(config.inputErrorClass);
   errorElement.classList.add(config.errorClass);
@@ -19,10 +15,41 @@ const hideInputError = (inputElement, config) => {
 };
 
 const checkInputValidity = (formElement, inputElement, config) => {
+  if (inputElement.validity.patternMismatch) {
+    inputElement.setCustomValidity(inputElement.dataset.errorMessage);
+  } else {
+    inputElement.setCustomValidity("");
+  }
+
   if (!inputElement.validity.valid) {
     showInputError(inputElement, inputElement.validationMessage, config);
   } else {
     hideInputError(inputElement, config);
+  }
+};
+
+const hasInvalidInput = (inputList) => {
+  return inputList.some((inputElement) => {
+    return !inputElement.validity.valid;
+  });
+};
+
+const disableSubmitButton = (buttonElement, config) => {
+  buttonElement.disabled = true;
+  buttonElement.classList.add(config.inactiveButtonClass);
+};
+
+const enableSubmitButton = (buttonElement, config) => {
+  buttonElement.disabled = false;
+  buttonElement.classList.remove(config.inactiveButtonClass);
+};
+
+const toggleButtonState = (inputList, buttonElement, config) => {
+  // console.log(config);
+  if (hasInvalidInput(inputList)) {
+    disableSubmitButton(buttonElement, config);
+  } else {
+    enableSubmitButton(buttonElement, config);
   }
 };
 
@@ -41,30 +68,10 @@ const setEventListeners = (formElement, config) => {
   });
 };
 
-const hasInvalidInput = (inputList) => {
-  return inputList.some((inputElement) => {
-    return !inputElement.validity.valid;
-  });
-};
-
-const toggleButtonState = (inputList, buttonElement, config) => {
-  // console.log(config);
-  if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add(config.inactiveButtonClass);
-  } else {
-    buttonElement.disabled = false;
-    buttonElement.classList.remove(config.inactiveButtonClass);
-  }
-};
-
 export const enableValidation = (config) => {
   const formList = Array.from(document.querySelectorAll(config.formSelector));
 
   formList.forEach((formElement) => {
-    formElement.addEventListener("submit", function (evt) {
-      evt.preventDefault();
-    });
     const fieldsetList = Array.from(
       formElement.querySelectorAll(config.fieldsetSelector)
     );
@@ -78,7 +85,7 @@ export const enableValidation = (config) => {
 export const clearValidation = (form, config) => {
   const buttonElement = form.querySelector(config.submitButtonSelector);
   buttonElement.disabled = true;
-  buttonElement.classList.add(config.inactiveButtonClass);
+  disableSubmitButton(buttonElement, config);
   const formInputs = form.querySelectorAll(config.inputSelector);
   formInputs.forEach((inputElement) => {
     hideInputError(inputElement, config);
